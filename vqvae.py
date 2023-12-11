@@ -36,8 +36,8 @@ class VQVAEDiscreteLayer(AbstractDiscreteLayer):
 
         if self.hard:
             # Apply STE for hard quantization
-            quantized = self.dictionary(indices)#self.fetch_embeddings_by_index(indices)
-            quantized = quantized + x - (x).detach()
+            quantized_dict = self.dictionary(indices)#self.fetch_embeddings_by_index(indices)
+            quantized = quantized_dict + x - (x).detach()
         else:
             quantized = torch.matmul(probs,  self.dictionary.weight)
 
@@ -47,8 +47,8 @@ class VQVAEDiscreteLayer(AbstractDiscreteLayer):
             embedding_loss = self.embedding_loss(true_quantized,x.detach())
             
         else:
-            commitment_loss = self.embedding_loss(quantized.detach(),x) 
-            embedding_loss = self.embedding_loss(quantized,x.detach())
+            commitment_loss = self.embedding_loss(quantized.detach(), x) 
+            embedding_loss = self.embedding_loss(quantized_dict, x.detach())
             
         vq_loss = self.beta * commitment_loss + embedding_loss
         
